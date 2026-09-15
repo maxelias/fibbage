@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fibbage — Host</title>
+<style>
+  :root{
+    --ink:#20261f;
+    --paper:#faf6ea;
+    --yellow:#ffd400;
+    --yellow-deep:#f0b400;
+    --teal:#1f6f6a;
+    --teal-deep:#164f4b;
+    --coral:#e85d4a;
+    --line: rgba(32,38,31,0.14);
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    background-image:
+      radial-gradient(circle at 6px 6px, rgba(32,38,31,0.06) 1.4px, transparent 1.4px);
+    background-size: 26px 26px;
+    color:var(--ink);
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    min-height:100vh;
+    padding: 28px 18px 60px;
+  }
+  .wrap{max-width: 880px; margin:0 auto;}
+
+  header.top{
+    display:flex; align-items:baseline; justify-content:space-between;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom: 22px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  header.top h1{
+    font-family: 'Baskerville', Georgia, serif;
+    font-size: 2rem;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  header.top h1 .q{
+    color: var(--coral);
+    font-style: italic;
+  }
+  header.top .tagline{
+    font-family: Verdana, sans-serif;
+    font-size: 0.72rem;
+    color: var(--teal-deep);
+    max-width: 260px;
+    line-height:1.4;
+    text-align:right;
+  }
+
+  .scorebar{
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 24px;
+  }
+  .score-chip{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-family: Verdana, sans-serif;
+    font-size: 0.8rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .score-chip b{font-family:'Baskerville',Georgia,serif; font-size:1rem;}
+  .score-chip .pts{background:var(--yellow); border-radius:999px; padding:1px 9px; font-weight:bold;}
+
+  .panel{
+    background:var(--card);
+    border:2px solid var(--ink);
+    border-radius: 4px;
+    padding: 26px 28px;
+    margin-bottom: 20px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  h2.step-title{
+    font-family: Verdana, sans-serif;
+    text-transform: none;
+    font-size: 0.78rem;
+    color: var(--teal-deep);
+    letter-spacing: 0.02em;
+    margin: 0 0 10px 0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  h2.step-title::before{
+    content:"";
+    width:9px;height:9px;
+    background:var(--coral);
+    display:inline-block;
+    border-radius:50%;
+  }
+
+  .setup-row{
+    display:flex; gap:10px; margin-bottom:10px; align-items:center;
+  }
+  .setup-row input[type=text]{
+    flex:1;
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    padding: 9px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    background: var(--paper);
+  }
+  button{
+    font-family: Verdana, sans-serif;
+    font-size: 0.82rem;
+    font-weight:bold;
+    padding: 10px 18px;
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    background: var(--yellow);
+    cursor:pointer;
+    transition: transform 0.08s ease;
+  }
+  button:hover{ transform: translateY(-1px); }
+  button:active{ transform: translateY(1px); }
+  button.secondary{ background:var(--paper); }
+  button.teal{ background:var(--teal); color:white; }
+  button.coral{ background:var(--coral); color:white; }
+  button.ghost{ background:transparent; border-color: var(--line); color: #555; box-shadow:none;}
+  button:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.small{ padding:6px 12px; font-size:0.72rem; }
+
+  .remove-x{
+    background:transparent; border:none; box-shadow:none;
+    color:var(--coral); font-size:1.1rem; padding:2px 8px; cursor:pointer;
+  }
+
+  .question-number{
+    font-family: Verdana, sans-serif;
+    font-size: 0.72rem;
+    color:#888;
+    margin-bottom: 6px;
+  }
+  .question-text{
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin: 0 0 6px 0;
+  }
+  .question-text .blank{
+    border-bottom: 3px solid var(--coral);
+    padding: 0 6px;
+  }
+
+  .timer-box{
+    display:flex; align-items:center; gap:16px;
+    margin: 18px 0;
+    font-family: Verdana, sans-serif;
+  }
+  .timer-display{
+    font-family: 'Courier New', monospace;
+    font-size: 2.4rem;
+    font-weight:bold;
+    background: var(--ink);
+    color: var(--yellow);
+    padding: 4px 18px;
+    border-radius: 4px;
+    min-width: 110px;
+    text-align:center;
+  }
+  .timer-display.warn{ color: var(--coral); }
+
+  .collect-grid{
+    display:grid; grid-template-columns: 1fr; gap:10px;
+    margin-top:14px;
+  }
+  .collect-row{
+    display:flex; align-items:center; gap:10px;
+  }
+  .collect-row .gname{
+    width:120px; flex-shrink:0;
+    font-family: Verdana, sans-serif;
+    font-weight:bold;
+    font-size:0.82rem;
+    color: var(--teal-deep);
+  }
+  .collect-row input[type=text]{
+    flex:1;
+    font-family: Georgia, serif;
+    font-size:1rem;
+    padding:8px 12px;
+    border:2px solid var(--line);
+    border-radius:3px;
+  }
+  .collect-row input[type=text]:focus{
+    border-color: var(--ink);
+    outline:none;
+  }
+  .truth-note{
+    font-family: Verdana, sans-serif;
+    font-size:0.72rem;
+    color:#888;
+    margin-top:14px;
+    border-top: 1px dashed var(--line);
+    padding-top:12px;
+  }
+
+  .reveal-list{
+    list-style:none; padding:0; margin: 16px 0 0 0;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .reveal-item{
+    display:flex; align-items:center; gap:14px;
+    border:2px solid var(--ink);
+    border-radius:3px;
+    padding: 10px 14px;
+    background: var(--paper);
+  }
+  .reveal-item .letter{
+    font-family:'Baskerville',Georgia,serif;
+    font-weight:bold;
+    font-size:1.2rem;
+    width:28px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--yellow);
+    border:2px solid var(--ink);
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .reveal-item .txt{ flex:1; font-size:1.05rem; }
+  .reveal-item.is-true{ border-color: var(--teal); }
+  .reveal-item .tag{
+    font-family:Verdana, sans-serif;
+    font-size:0.65rem;
+    color:white; background:var(--teal);
+    padding:2px 8px; border-radius:999px;
+  }
+
+  .vote-grid{
+    display:grid; grid-template-columns: 1fr; gap:10px; margin-top:14px;
+  }
+  .vote-row{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .vote-row .gname{
+    width:120px; flex-shrink:0;
+    font-family: Verdana, sans-serif;
+    font-weight:bold;
+    font-size:0.82rem;
+    color: var(--teal-deep);
+  }
+  .vote-opt{
+    font-family: Verdana, sans-serif;
+    font-size:0.78rem;
+    padding:6px 12px;
+    border:2px solid var(--line);
+    border-radius:999px;
+    background:var(--card);
+    cursor:pointer;
+  }
+  .vote-opt.selected{
+    border-color: var(--ink);
+    background: var(--yellow);
+  }
+
+  .results-list{ list-style:none; padding:0; margin:14px 0 0; display:flex; flex-direction:column; gap:8px;}
+  .results-item{
+    border:2px solid var(--ink); border-radius:3px; padding:10px 14px;
+    background:var(--paper);
+    font-family: Verdana, sans-serif;
+    font-size:0.85rem;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .results-item .desc{ flex:1; font-family: Georgia, serif; font-size:0.95rem;}
+  .results-item .delta{
+    font-weight:bold; white-space:nowrap;
+  }
+  .results-item .delta.pos{ color: var(--teal-deep); }
+
+  .footer-actions{
+    display:flex; justify-content: space-between; align-items:center;
+    margin-top: 22px; flex-wrap:wrap; gap:10px;
+  }
+  .footer-actions .right-group{ display:flex; gap:10px; }
+
+  .rules-toggle{
+    font-family: Verdana, sans-serif;
+    font-size:0.72rem;
+    color: var(--teal-deep);
+    cursor:pointer;
+    text-decoration: underline;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    display:inline-block;
+  }
+  .rules-box{
+    font-family: Verdana, sans-serif;
+    font-size:0.76rem;
+    line-height:1.7;
+    background: #fffdf3;
+    border:1px dashed var(--line);
+    border-radius:3px;
+    padding:14px 18px;
+    margin-bottom: 18px;
+    display:none;
+  }
+  .rules-box.open{ display:block; }
+  .rules-box ul{ margin:6px 0 0 0; padding-left: 18px; }
+
+  .final-badge{
+    display:inline-block;
+    background:var(--coral); color:white;
+    font-family:Verdana, sans-serif;
+    font-size:0.7rem; font-weight:bold;
+    padding: 3px 10px; border-radius:999px;
+    margin-left:8px;
+    vertical-align:middle;
+  }
+
+  .empty-state{
+    font-family: Verdana, sans-serif;
+    color:#777; font-size:0.85rem; text-align:center; padding: 30px 10px;
+  }
+
+  select{
+    font-family: Verdana, sans-serif;
+    font-size:0.8rem;
+    padding:8px 10px;
+    border:2px solid var(--ink);
+    border-radius:3px;
+    background:var(--paper);
+  }
+
+  @media (max-width:600px){
+    .question-text{ font-size:1.2rem; }
+    .timer-display{ font-size:1.8rem; }
+    .collect-row .gname, .vote-row .gname{ width:90px; font-size:0.72rem;}
+    header.top .tagline{ text-align:left; max-width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const QUESTIONS = [
+  { text: "In October of 2013, eight sixth-graders from a New York college prep school were hospitalized after someone released ______ in a classroom.", answer: "Lynx body spray" },
+  { text: "After an allergic reaction to steroids used to treat asthma, a 28-year-old woman started growing ______ on her head instead of hair.", answer: "fingernails" },
+  { text: "The city of Olney, Illinois organizes an annual event in order to ______ squirrels.", answer: "count" },
+  { text: "A Kickstarter campaign met its $30,000 goal on April 7, 2012 for its shoes designed for ______.", answer: "atheists" },
+  { text: "Amerigo Vespucci, the man for whom America was named, was a ______ dealer.", answer: "pickle" },
+  { text: "Walter Arnold received the world's first speeding ticket in 1896 for going ______ miles per hour.", answer: "8" },
+  { text: "Edgar Valdez Villarreal, a notorious Mexican drug cartel leader, had the not-so-scary nickname \u201cLa ______.\u201d", answer: "Barbie" },
+  { text: "Tashirojima is an island off of Japan that is completely overrun by ______.", answer: "cats" },
+  { text: "Maryland's official state sport is ______.", answer: "jousting" },
+  { text: "In 1967, a small town in Ecuador elected an inanimate object mayor. The elected mayor was a ______.", answer: "foot powder" },
+  { text: "A group known as the \u201cRobin Hooders\u201d in Keene, New Hampshire pay for other people's ______.", answer: "parking meters" },
+  { text: "As a way to protest Belarus' police state, a Swedish group dropped hundreds of ______ from an airplane.", answer: "teddy bears" },
+  { text: "A man in western Pennsylvania got a DUI for having an open can of beer while riding a ______.", answer: "lawn mower" },
+  { text: "Anatidaephobia is the fear that somewhere in the world a ______ is watching you.", answer: "duck" },
+  { text: "For his voiceover work in Texas Chainsaw Massacre, John Larroquette was paid not with money, but with ______.", answer: "marijuana" },
+  { text: "Famed American poet Charles Bukowski's tombstone is engraved with the words \u201cDon't ______.\u201d", answer: "Try" },
+  { text: "A beaver's anal secretions can be used as a ______ substitute in some foods.", answer: "vanilla" }
+];
+
+let state = {
+  phase: 'setup', // setup | write | collect | reveal | vote | results | done
+  groups: [],
+  roundIndex: 0,
+  order: [], // shuffled question indices, filled at start
+  submissions: {}, // groupId -> text
+  options: [], // [{id, type:'true'|'lie', text, groupId?}]
+  votes: {}, // groupId -> optionId
+  timer: { remaining: 0, running: false, intervalId: null, total: 0 },
+  finalRound: false,
+  rulesOpen: false,
+  lastResults: null,
+};
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header class="top">
+      <h1>Fibbage<span class="q">.</span></h1>
+      <div class="tagline">Guess the truth, or trick everyone into believing your lie.</div>
+    </header>
+    ${state.groups.length ? scorebar() : ''}
+    <div class="rules-toggle" onclick="toggleRules()">${state.rulesOpen ? 'Hide' : 'Show'} scoring rules</div>
+    <div class="rules-box ${state.rulesOpen ? 'open' : ''}">
+      <b>How points work</b>
+      <ul>
+        <li>Vote for the real answer: +2 points</li>
+        <li>Each person your lie fools: +2 points</li>
+        <li>Vote for your own answer: 0 points</li>
+        <li>Perfect Fibbage (your lie fools <i>everyone</i>): +10 bonus</li>
+        <li>Final round scores are doubled</li>
+      </ul>
+    </div>
+    <div id="stage"></div>
+  `;
+  renderStage();
+}
+
+function scorebar(){
+  const sorted = [...state.groups].sort((a,b)=>b.score-a.score);
+  return `<div class="scorebar">${sorted.map(g=>`
+    <div class="score-chip"><b>${escapeHtml(g.name)}</b><span class="pts">${g.score}</span></div>
+  `).join('')}</div>`;
+}
+
+function renderStage(){
+  const stage = document.getElementById('stage');
+  if(state.phase === 'setup') stage.innerHTML = setupView();
+  else if(state.phase === 'write') stage.innerHTML = writeView();
+  else if(state.phase === 'collect') stage.innerHTML = collectView();
+  else if(state.phase === 'reveal') stage.innerHTML = revealView();
+  else if(state.phase === 'vote') stage.innerHTML = voteView();
+  else if(state.phase === 'results') stage.innerHTML = resultsView();
+  else if(state.phase === 'done') stage.innerHTML = doneView();
+  wireStage();
+}
+
+/* ---------- SETUP ---------- */
+function setupView(){
+  return `
+    <div class="panel">
+      <h2 class="step-title">Set up year groups</h2>
+      <div id="setup-rows">
+        ${state.groups.map((g,i)=>`
+          <div class="setup-row" data-idx="${i}">
+            <input type="text" value="${escapeAttr(g.name)}" data-role="gname" data-idx="${i}" placeholder="Year group name">
+            <button class="remove-x" data-role="removeGroup" data-idx="${i}">&times;</button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="secondary small" data-role="addGroup" style="margin-top:6px;">+ Add year group</button>
+      <div class="footer-actions">
+        <span style="font-family:Verdana, sans-serif; font-size:0.75rem; color:#888;">${QUESTIONS.length} questions loaded, played in random order</span>
+        <button class="teal" data-role="startGame" ${state.groups.length < 2 ? 'disabled' : ''}>Start game &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- WRITE (writing timer) ---------- */
+function writeView(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  return `
+    <div class="panel">
+      <h2 class="step-title">Round ${state.roundIndex+1} of ${state.order.length} — writing time ${finalBadge()}</h2>
+      <div class="question-number">Read this out loud</div>
+      <p class="question-text">${fillBlank(q.text)}</p>
+      <div class="timer-box">
+        <div class="timer-display ${state.timer.remaining<=10 && state.timer.running ? 'warn':''}">${formatTime(state.timer.remaining)}</div>
+        <button data-role="timerToggle">${state.timer.running ? 'Pause' : (state.timer.remaining>0 ? 'Resume' : 'Start 45s')}</button>
+        <button class="ghost small" data-role="timerReset">Reset</button>
+      </div>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToSetup">&larr; Setup</button>
+        <button class="coral" data-role="toCollect">Time's up — collect answers &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- COLLECT ---------- */
+function collectView(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  return `
+    <div class="panel">
+      <h2 class="step-title">Round ${state.roundIndex+1} — enter what each year group wrote ${finalBadge()}</h2>
+      <div class="question-number">Question</div>
+      <p class="question-text" style="font-size:1.15rem;">${fillBlank(q.text)}</p>
+      <div class="collect-grid">
+        ${state.groups.map(g=>`
+          <div class="collect-row">
+            <div class="gname">${escapeHtml(g.name)}</div>
+            <input type="text" data-role="submission" data-gid="${g.id}" value="${escapeAttr(state.submissions[g.id] || '')}" placeholder="What they wrote on their paper...">
+          </div>
+        `).join('')}
+      </div>
+      <div class="truth-note">The real answer — <b>${escapeHtml(q.answer)}</b> — is added automatically. If a year group's answer is basically the same as the real answer, leave their box blank; they'll be counted as guessing the truth.</div>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToWrite">&larr; Back</button>
+        <button class="teal" data-role="toReveal">Reveal answers &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- REVEAL ---------- */
+function revealView(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  return `
+    <div class="panel">
+      <h2 class="step-title">Round ${state.roundIndex+1} — read these aloud, in order ${finalBadge()}</h2>
+      <p class="question-text" style="font-size:1.15rem;">${fillBlank(q.text)}</p>
+      <ul class="reveal-list">
+        ${state.options.map(o=>`
+          <li class="reveal-item ${o.type==='true' ? 'is-true':''}">
+            <div class="letter">${o.letter}</div>
+            <div class="txt">${escapeHtml(o.text)}</div>
+            ${o.type==='true' ? '<div class="tag">real answer — don\\'t reveal yet!</div>' : ''}
+          </li>
+        `).join('')}
+      </ul>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToCollect">&larr; Edit answers</button>
+        <button class="coral" data-role="toVote">Start voting &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- VOTE ---------- */
+function voteView(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  return `
+    <div class="panel">
+      <h2 class="step-title">Round ${state.roundIndex+1} — record each year group's vote ${finalBadge()}</h2>
+      <p class="question-text" style="font-size:1.15rem;">${fillBlank(q.text)}</p>
+      <div class="timer-box">
+        <div class="timer-display ${state.timer.remaining<=10 && state.timer.running ? 'warn':''}">${formatTime(state.timer.remaining)}</div>
+        <button data-role="timerToggle">${state.timer.running ? 'Pause' : (state.timer.remaining>0 ? 'Resume' : 'Start 20s')}</button>
+        <button class="ghost small" data-role="timerReset">Reset</button>
+      </div>
+      <div class="vote-grid">
+        ${state.groups.map(g=>`
+          <div class="vote-row">
+            <div class="gname">${escapeHtml(g.name)}</div>
+            ${state.options.map(o=>`
+              <div class="vote-opt ${state.votes[g.id]===o.id ? 'selected':''}" data-role="voteOpt" data-gid="${g.id}" data-oid="${o.id}">${o.letter}</div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToReveal">&larr; Back</button>
+        <button class="teal" data-role="toResults" ${Object.keys(state.votes).length < state.groups.length ? 'disabled' : ''}>Reveal &amp; score round &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- RESULTS ---------- */
+function resultsView(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  const r = state.lastResults;
+  return `
+    <div class="panel">
+      <h2 class="step-title">Round ${state.roundIndex+1} results ${finalBadge()}</h2>
+      <p class="question-text" style="font-size:1.15rem;">The real answer was <b>${escapeHtml(q.answer)}</b></p>
+      <ul class="results-list">
+        ${r.lines.map(line=>`
+          <li class="results-item">
+            <div class="desc">${line.desc}</div>
+            <div class="delta ${line.delta>0?'pos':''}">${line.delta>0 ? '+' : ''}${line.delta}</div>
+          </li>
+        `).join('')}
+      </ul>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToVote">&larr; Fix votes</button>
+        <button class="coral" data-role="nextRound">${state.roundIndex+1 >= state.order.length ? 'Finish game' : 'Next round'} &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- DONE ---------- */
+function doneView(){
+  const sorted = [...state.groups].sort((a,b)=>b.score-a.score);
+  return `
+    <div class="panel">
+      <h2 class="step-title">Final scores</h2>
+      <ul class="reveal-list">
+        ${sorted.map((g,i)=>`
+          <li class="reveal-item ${i===0?'is-true':''}">
+            <div class="letter">${i+1}</div>
+            <div class="txt">${escapeHtml(g.name)}</div>
+            <div class="tag" style="background:${i===0?'var(--coral)':'var(--teal)'}">${g.score} pts</div>
+          </li>
+        `).join('')}
+      </ul>
+      <div class="footer-actions">
+        <button class="ghost" data-role="backToSetup">Start a new game</button>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- helpers ---------- */
+function fillBlank(text){
+  return escapeHtml(text).replace('______', '<span class="blank">______</span>');
+}
+function finalBadge(){
+  return state.finalRound ? '<span class="final-badge">FINAL — double points</span>' : '';
+}
+function formatTime(s){
+  const m = Math.floor(s/60), sec = s%60;
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ---------- timer ---------- */
+function startTimer(seconds){
+  clearTimer();
+  state.timer.remaining = seconds;
+  state.timer.total = seconds;
+  state.timer.running = true;
+  state.timer.intervalId = setInterval(()=>{
+    state.timer.remaining--;
+    if(state.timer.remaining<=0){
+      state.timer.remaining = 0;
+      state.timer.running = false;
+      clearInterval(state.timer.intervalId);
+    }
+    updateTimerDisplayOnly();
+  }, 1000);
+  renderStage();
+}
+function toggleTimer(defaultSeconds){
+  if(state.timer.running){
+    state.timer.running = false;
+    clearInterval(state.timer.intervalId);
+    renderStage();
+  } else if(state.timer.remaining > 0){
+    state.timer.running = true;
+    state.timer.intervalId = setInterval(()=>{
+      state.timer.remaining--;
+      if(state.timer.remaining<=0){
+        state.timer.remaining = 0;
+        state.timer.running = false;
+        clearInterval(state.timer.intervalId);
+      }
+      updateTimerDisplayOnly();
+    }, 1000);
+    renderStage();
+  } else {
+    startTimer(defaultSeconds);
+  }
+}
+function clearTimer(){
+  if(state.timer.intervalId) clearInterval(state.timer.intervalId);
+  state.timer.intervalId = null;
+}
+function resetTimer(){
+  clearTimer();
+  state.timer.running = false;
+  state.timer.remaining = 0;
+  state.timer.total = 0;
+  renderStage();
+}
+function updateTimerDisplayOnly(){
+  const el = document.querySelector('.timer-display');
+  if(el){
+    el.textContent = formatTime(state.timer.remaining);
+    el.classList.toggle('warn', state.timer.remaining<=10 && state.timer.running);
+  }
+  const btn = document.querySelector('[data-role="timerToggle"]');
+  if(btn && state.timer.remaining===0 && state.timer.running===false){
+    btn.textContent = 'Start';
+  }
+}
+
+/* ---------- actions ---------- */
+function wireStage(){
+  document.querySelectorAll('[data-role="gname"]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      state.groups[+e.target.dataset.idx].name = e.target.value;
+    });
+  });
+  const addBtn = document.querySelector('[data-role="addGroup"]');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    state.groups.push({id: uid(), name: `Year ${state.groups.length+7}`, score: 0});
+    renderStage();
+  });
+  document.querySelectorAll('[data-role="removeGroup"]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      state.groups.splice(+e.currentTarget.dataset.idx, 1);
+      renderStage();
+    });
+  });
+  const startBtn = document.querySelector('[data-role="startGame"]');
+  if(startBtn) startBtn.addEventListener('click', ()=>{
+    state.order = shuffle(QUESTIONS.map((_,i)=>i));
+    state.roundIndex = 0;
+    state.finalRound = false;
+    beginRound();
+  });
+
+  const timerToggle = document.querySelector('[data-role="timerToggle"]');
+  if(timerToggle) timerToggle.addEventListener('click', ()=>{
+    const def = state.phase === 'write' ? 45 : 20;
+    toggleTimer(def);
+  });
+  const timerReset = document.querySelector('[data-role="timerReset"]');
+  if(timerReset) timerReset.addEventListener('click', resetTimer);
+
+  const backToSetup = document.querySelector('[data-role="backToSetup"]');
+  if(backToSetup) backToSetup.addEventListener('click', ()=>{
+    clearTimer();
+    state = { ...state, phase:'setup', groups: state.phase==='done' ? state.groups.map(g=>({...g, score:0})) : state.groups, submissions:{}, options:[], votes:{}, roundIndex:0, lastResults:null, timer:{remaining:0,running:false,intervalId:null,total:0} };
+    render();
+  });
+
+  const toCollect = document.querySelector('[data-role="toCollect"]');
+  if(toCollect) toCollect.addEventListener('click', ()=>{
+    clearTimer();
+    state.phase = 'collect';
+    resetTimerSilent();
+    renderStage();
+  });
+  const backToWrite = document.querySelector('[data-role="backToWrite"]');
+  if(backToWrite) backToWrite.addEventListener('click', ()=>{
+    state.phase = 'write';
+    renderStage();
+  });
+
+  document.querySelectorAll('[data-role="submission"]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      state.submissions[e.target.dataset.gid] = e.target.value;
+    });
+  });
+  const toReveal = document.querySelector('[data-role="toReveal"]');
+  if(toReveal) toReveal.addEventListener('click', ()=>{
+    buildOptions();
+    state.phase = 'reveal';
+    renderStage();
+  });
+  const backToCollect = document.querySelector('[data-role="backToCollect"]');
+  if(backToCollect) backToCollect.addEventListener('click', ()=>{
+    state.phase = 'collect';
+    renderStage();
+  });
+
+  const toVote = document.querySelector('[data-role="toVote"]');
+  if(toVote) toVote.addEventListener('click', ()=>{
+    state.votes = {};
+    clearTimer();
+    resetTimerSilent();
+    state.phase = 'vote';
+    renderStage();
+  });
+  const backToReveal = document.querySelector('[data-role="backToReveal"]');
+  if(backToReveal) backToReveal.addEventListener('click', ()=>{
+    state.phase = 'reveal';
+    renderStage();
+  });
+
+  document.querySelectorAll('[data-role="voteOpt"]').forEach(el=>{
+    el.addEventListener('click', e=>{
+      const gid = e.currentTarget.dataset.gid;
+      const oid = e.currentTarget.dataset.oid;
+      state.votes[gid] = oid;
+      renderStage();
+    });
+  });
+  const toResults = document.querySelector('[data-role="toResults"]');
+  if(toResults) toResults.addEventListener('click', ()=>{
+    computeResults();
+    state.phase = 'results';
+    renderStage();
+  });
+  const backToVote = document.querySelector('[data-role="backToVote"]');
+  if(backToVote) backToVote.addEventListener('click', ()=>{
+    state.phase = 'vote';
+    renderStage();
+  });
+
+  const nextRound = document.querySelector('[data-role="nextRound"]');
+  if(nextRound) nextRound.addEventListener('click', ()=>{
+    state.roundIndex++;
+    if(state.roundIndex >= state.order.length){
+      state.phase = 'done';
+      renderStage();
+    } else {
+      state.finalRound = (state.roundIndex === state.order.length - 1);
+      beginRound();
+    }
+  });
+}
+
+function resetTimerSilent(){
+  state.timer = { remaining:0, running:false, intervalId:null, total:0 };
+}
+
+function beginRound(){
+  clearTimer();
+  state.submissions = {};
+  state.options = [];
+  state.votes = {};
+  state.lastResults = null;
+  resetTimerSilent();
+  state.phase = 'write';
+  render();
+}
+
+function buildOptions(){
+  const q = QUESTIONS[state.order[state.roundIndex]];
+  const opts = [];
+  opts.push({ id: 'TRUE', type:'true', text: q.answer });
+  state.groups.forEach(g=>{
+    const txt = (state.submissions[g.id] || '').trim();
+    if(txt.length === 0) return; // treated as a truth-guess, not a distinct option
+    // if it's basically identical to the true answer, skip as duplicate lie
+    if(txt.toLowerCase() === q.answer.toLowerCase()) return;
+    opts.push({ id: g.id, type:'lie', text: txt, groupId: g.id });
+  });
+  const shuffled = shuffle(opts);
+  const letters = 'ABCDEFGHIJ';
+  shuffled.forEach((o,i)=>{ o.letter = letters[i]; });
+  state.options = shuffled;
+}
+
+function computeResults(){
+  const multiplier = state.finalRound ? 2 : 1;
+  const lines = [];
+  const lieOptions = state.options.filter(o=>o.type==='lie');
+  const trueOption = state.options.find(o=>o.type==='true');
+
+  // voting points
+  state.groups.forEach(g=>{
+    const votedId = state.votes[g.id];
+    if(!votedId) return;
+    if(votedId === g.id){
+      lines.push({ desc: `${escapeHtml(g.name)} voted for their own answer`, delta: 0 });
+      return;
+    }
+    if(votedId === trueOption.id){
+      addScore(g.id, 2*multiplier);
+      lines.push({ desc: `${escapeHtml(g.name)} found the real answer`, delta: 2*multiplier });
+    }
+  });
+
+  // fooling points per lie author
+  lieOptions.forEach(opt=>{
+    const foolCount = state.groups.filter(g => g.id !== opt.groupId && state.votes[g.id] === opt.id).length;
+    if(foolCount > 0){
+      const gained = foolCount * 2 * multiplier;
+      addScore(opt.groupId, gained);
+      const authorName = state.groups.find(g=>g.id===opt.groupId).name;
+      lines.push({ desc: `${escapeHtml(authorName)}'s lie fooled ${foolCount} group${foolCount>1?'s':''}`, delta: gained });
+
+      const otherGroupCount = state.groups.length - 1;
+      if(foolCount === otherGroupCount && otherGroupCount > 0){
+        addScore(opt.groupId, 10*multiplier);
+        lines.push({ desc: `${escapeHtml(authorName)} pulled off a Perfect Fibbage!`, delta: 10*multiplier });
+      }
+    }
+  });
+
+  if(lines.length === 0){
+    lines.push({ desc: 'No points scored this round', delta: 0 });
+  }
+
+  state.lastResults = { lines };
+}
+
+function addScore(groupId, amount){
+  const g = state.groups.find(g=>g.id===groupId);
+  if(g) g.score += amount;
+}
+
+function toggleRules(){
+  state.rulesOpen = !state.rulesOpen;
+  render();
+}
+
+// seed Year 7-12 groups to start
+state.groups = [7,8,9,10,11,12].map(n => ({ id: uid(), name: `Year ${n}`, score: 0 }));
+
+render();
+</script>
+</body>
+</html>

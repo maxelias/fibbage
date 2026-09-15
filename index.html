@@ -586,7 +586,7 @@ function broadcastState(){
       ? state.options.map(o => ({ letter: o.letter, text: o.text, isTrue: state.phase === 'results' ? o.type === 'true' : false }))
       : [],
     votesIn: state.phase === 'vote' ? Object.keys(state.votes).length : 0,
-    votesTotal: state.groups.length,
+    votesTotal: state.phase === 'vote' ? state.groups.filter(g => !(state.trueGuessers||[]).includes(g.id)).length : state.groups.length,
     lastResults: state.phase === 'results' ? state.lastResults : null,
     groups: state.groups.map(g => ({ name: g.name, score: g.score })),
   };
@@ -609,7 +609,8 @@ function render(){
         <div class="rules-box ${state.rulesOpen ? 'open' : ''}">
           <b>How points work</b>
           <ul>
-            <li>Vote for the real answer: +2 points</li>
+            <li>Guessed the real answer yourself (left your box blank or wrote it): +5 points, no matter how you vote</li>
+            <li>Vote for the real answer (when you didn't already guess it): +2 points</li>
             <li>Each person your lie fools: +2 points</li>
             <li>Vote for your own answer: 0 points</li>
             <li>Perfect Fibbage (your lie fools <i>everyone</i>): +10 bonus</li>
@@ -753,6 +754,8 @@ function revealView(){
 /* ---------- VOTE ---------- */
 function voteView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
+  const trueGuessers = state.trueGuessers || [];
+  const votingGroups = state.groups.filter(g => !trueGuessers.includes(g.id));
   return `
     <div class="panel">
       <h2 class="step-title">Round ${state.roundIndex+1} — record each year group's vote ${finalBadge()}</h2>
@@ -763,18 +766,28 @@ function voteView(){
         <button class="ghost small" data-role="timerReset">Reset</button>
       </div>
       <div class="vote-grid">
-        ${state.groups.map(g=>`
+        ${state.groups.map(g=>{
+          if(trueGuessers.includes(g.id)){
+            return `
+              <div class="vote-row">
+                <div class="gname">${escapeHtml(g.name)}</div>
+                <div class="vote-opt" style="opacity:0.5; cursor:default;">Already got it right — sits out this vote</div>
+              </div>
+            `;
+          }
+          return `
           <div class="vote-row">
             <div class="gname">${escapeHtml(g.name)}</div>
             ${state.options.map(o=>`
               <div class="vote-opt ${state.votes[g.id]===o.id ? 'selected':''}" data-role="voteOpt" data-gid="${g.id}" data-oid="${o.id}">${o.letter}</div>
             `).join('')}
           </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
       <div class="footer-actions">
         <button class="ghost" data-role="backToReveal">&larr; Back</button>
-        <button class="teal" data-role="toResults" ${Object.keys(state.votes).length < state.groups.length ? 'disabled' : ''}>Reveal &amp; score round &rarr;</button>
+        <button class="teal" data-role="toResults" ${Object.keys(state.votes).length < votingGroups.length ? 'disabled' : ''}>Reveal &amp; score round &rarr;</button>
       </div>
     </div>
   `;
@@ -1046,6 +1059,7 @@ function beginRound(){
   state.submissions = {};
   state.options = [];
   state.votes = {};
+  state.trueGuessers = [];
   state.lastResults = null;
   resetTimerSilent();
   state.phase = 'write';
@@ -1056,17 +1070,18 @@ function buildOptions(){
   const q = QUESTIONS[state.order[state.roundIndex]];
   const opts = [];
   opts.push({ id: 'TRUE', type:'true', text: q.answer });
+  const trueGuessers = [];
   state.groups.forEach(g=>{
     const txt = (state.submissions[g.id] || '').trim();
-    if(txt.length === 0) return; // treated as a truth-guess, not a distinct option
-    // if it's basically identical to the true answer, skip as duplicate lie
-    if(txt.toLowerCase() === q.answer.toLowerCase()) return;
+    if(txt.length === 0){ trueGuessers.push(g.id); return; } // blank = guessed the truth
+    if(txt.toLowerCase() === q.answer.toLowerCase()){ trueGuessers.push(g.id); return; } // wrote the truth
     opts.push({ id: g.id, type:'lie', text: txt, groupId: g.id });
   });
   const shuffled = shuffle(opts);
   const letters = 'ABCDEFGHIJ';
   shuffled.forEach((o,i)=>{ o.letter = letters[i]; });
   state.options = shuffled;
+  state.trueGuessers = trueGuessers;
 }
 
 function computeResults(){
@@ -1074,9 +1089,20 @@ function computeResults(){
   const lines = [];
   const lieOptions = state.options.filter(o=>o.type==='lie');
   const trueOption = state.options.find(o=>o.type==='true');
+  const trueGuessers = state.trueGuessers || [];
 
-  // voting points
+  // groups who already guessed the real answer on paper get their +5 straight away,
+  // regardless of how they vote
+  trueGuessers.forEach(gid=>{
+    const g = state.groups.find(g=>g.id===gid);
+    if(!g) return;
+    addScore(gid, 5*multiplier);
+    lines.push({ desc: `${escapeHtml(g.name)} guessed the real answer on paper`, delta: 5*multiplier });
+  });
+
+  // voting points (skip true-guessers here — they're already rewarded above)
   state.groups.forEach(g=>{
+    if(trueGuessers.includes(g.id)) return;
     const votedId = state.votes[g.id];
     if(!votedId) return;
     if(votedId === g.id){

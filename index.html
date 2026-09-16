@@ -83,7 +83,6 @@
     .layout{ grid-template-columns: 1fr; }
     .sidebar{ position:static; order:-1; }
   }
-
   header.top{
     display:flex; align-items:baseline; justify-content:space-between;
     border-bottom: 3px solid var(--ink);
@@ -106,11 +105,10 @@
     font-family: Verdana, sans-serif;
     font-size: 0.72rem;
     color: var(--teal-deep);
-    max-width: 260px;
+    max-width: 300px;
     line-height:1.4;
     text-align:right;
   }
-
   .scorebar{
     display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 24px;
   }
@@ -125,7 +123,6 @@
   }
   .score-chip b{font-family:'Baskerville',Georgia,serif; font-size:1rem;}
   .score-chip .pts{background:var(--yellow); border-radius:999px; padding:1px 9px; font-weight:bold;}
-
   .panel{
     background:var(--card);
     border:2px solid var(--ink);
@@ -134,7 +131,6 @@
     margin-bottom: 20px;
     box-shadow: 6px 6px 0 var(--ink);
   }
-
   h2.step-title{
     font-family: Verdana, sans-serif;
     text-transform: none;
@@ -153,7 +149,6 @@
     display:inline-block;
     border-radius:50%;
   }
-
   .setup-row{
     display:flex; gap:10px; margin-bottom:10px; align-items:center;
   }
@@ -185,12 +180,10 @@
   button.ghost{ background:transparent; border-color: var(--line); color: #555; box-shadow:none;}
   button:disabled{ opacity:0.4; cursor:not-allowed; }
   button.small{ padding:6px 12px; font-size:0.72rem; }
-
   .remove-x{
     background:transparent; border:none; box-shadow:none;
     color:var(--coral); font-size:1.1rem; padding:2px 8px; cursor:pointer;
   }
-
   .question-number{
     font-family: Verdana, sans-serif;
     font-size: 0.72rem;
@@ -206,7 +199,6 @@
     border-bottom: 3px solid var(--coral);
     padding: 0 6px;
   }
-
   .timer-box{
     display:flex; align-items:center; gap:16px;
     margin: 18px 0;
@@ -224,7 +216,6 @@
     text-align:center;
   }
   .timer-display.warn{ color: var(--coral); }
-
   .collect-grid{
     display:grid; grid-template-columns: 1fr; gap:10px;
     margin-top:14px;
@@ -259,7 +250,6 @@
     border-top: 1px dashed var(--line);
     padding-top:12px;
   }
-
   .reveal-list{
     list-style:none; padding:0; margin: 16px 0 0 0;
     display:flex; flex-direction:column; gap:10px;
@@ -290,7 +280,6 @@
     color:white; background:var(--teal);
     padding:2px 8px; border-radius:999px;
   }
-
   .vote-grid{
     display:grid; grid-template-columns: 1fr; gap:10px; margin-top:14px;
   }
@@ -317,7 +306,6 @@
     border-color: var(--ink);
     background: var(--yellow);
   }
-
   .results-list{ list-style:none; padding:0; margin:14px 0 0; display:flex; flex-direction:column; gap:8px;}
   .results-item{
     border:2px solid var(--ink); border-radius:3px; padding:10px 14px;
@@ -331,13 +319,11 @@
     font-weight:bold; white-space:nowrap;
   }
   .results-item .delta.pos{ color: var(--teal-deep); }
-
   .footer-actions{
     display:flex; justify-content: space-between; align-items:center;
     margin-top: 22px; flex-wrap:wrap; gap:10px;
   }
   .footer-actions .right-group{ display:flex; gap:10px; }
-
   .rules-toggle{
     font-family: Verdana, sans-serif;
     font-size:0.72rem;
@@ -361,7 +347,6 @@
   }
   .rules-box.open{ display:block; }
   .rules-box ul{ margin:6px 0 0 0; padding-left: 18px; }
-
   .final-badge{
     display:inline-block;
     background:var(--coral); color:white;
@@ -371,12 +356,10 @@
     margin-left:8px;
     vertical-align:middle;
   }
-
   .empty-state{
     font-family: Verdana, sans-serif;
     color:#777; font-size:0.85rem; text-align:center; padding: 30px 10px;
   }
-
   select{
     font-family: Verdana, sans-serif;
     font-size:0.8rem;
@@ -385,7 +368,6 @@
     border-radius:3px;
     background:var(--paper);
   }
-
   /* ---------- DISPLAY SCREEN (projector/TV view) ---------- */
   body.display-mode{
     background: var(--ink);
@@ -513,13 +495,29 @@
   .open-display-btn{
     background: var(--teal); color:white;
   }
+  .how-to-play{
+    font-family: Verdana, sans-serif;
+    font-size:0.78rem;
+    line-height:1.6;
+    background:#f0f7f6;
+    border:1px solid var(--teal);
+    border-radius:4px;
+    padding:14px 18px;
+    margin-bottom:18px;
+  }
+  .how-to-play h3{
+    margin:0 0 8px 0;
+    font-size:0.85rem;
+    color:var(--teal-deep);
+  }
+  .how-to-play ol{ margin:0; padding-left:18px; }
+  .how-to-play li{ margin-bottom:4px; }
   @media (max-width: 900px){
     .display-wrap{ grid-template-columns: 1fr; padding: 36px 24px; }
     .display-sidebar{ border-left:none; border-top:2px solid rgba(250,246,234,0.25); padding-left:0; padding-top:24px; }
     .display-question{ font-size:2rem; }
     .display-timer{ font-size:3rem; }
   }
-
   @media (max-width:600px){
     .question-text{ font-size:1.2rem; }
     .timer-display{ font-size:1.8rem; }
@@ -530,28 +528,30 @@
 </head>
 <body>
 <div class="wrap" id="app"></div>
-
 <script>
+/* School-appropriate Fibbage questions — silly but clean for classroom use */
 const QUESTIONS = [
-  { text: "In October of 2013, eight sixth-graders from a New York college prep school were hospitalized after someone released ______ in a classroom.", answer: "Lynx body spray" },
+  { text: "In October of 2013, eight sixth-graders from a New York college prep school were hospitalized after someone released ______ in a classroom.", answer: "Axe body spray" },
   { text: "After an allergic reaction to steroids used to treat asthma, a 28-year-old woman started growing ______ on her head instead of hair.", answer: "fingernails" },
   { text: "The city of Olney, Illinois organizes an annual event in order to ______ squirrels.", answer: "count" },
   { text: "A Kickstarter campaign met its $30,000 goal on April 7, 2012 for its shoes designed for ______.", answer: "atheists" },
   { text: "Amerigo Vespucci, the man for whom America was named, was a ______ dealer.", answer: "pickle" },
   { text: "Walter Arnold received the world's first speeding ticket in 1896 for going ______ miles per hour.", answer: "8" },
-  { text: "Edgar Valdez Villarreal, a notorious Mexican drug cartel leader, had the not-so-scary nickname \u201cLa ______.\u201d", answer: "Barbie" },
   { text: "Tashirojima is an island off of Japan that is completely overrun by ______.", answer: "cats" },
   { text: "Maryland's official state sport is ______.", answer: "jousting" },
   { text: "In 1967, a small town in Ecuador elected an inanimate object mayor. The elected mayor was a ______.", answer: "foot powder" },
-  { text: "A group known as the \u201cRobin Hooders\u201d in Keene, New Hampshire pay for other people's ______.", answer: "parking meters" },
+  { text: "A group known as the “Robin Hooders” in Keene, New Hampshire pay for other people's ______.", answer: "parking meters" },
   { text: "As a way to protest Belarus' police state, a Swedish group dropped hundreds of ______ from an airplane.", answer: "teddy bears" },
-  { text: "A man in western Pennsylvania got a DUI for having an open can of beer while riding a ______.", answer: "lawn mower" },
   { text: "Anatidaephobia is the fear that somewhere in the world a ______ is watching you.", answer: "duck" },
-  { text: "For his voiceover work in Texas Chainsaw Massacre, John Larroquette was paid not with money, but with ______.", answer: "marijuana" },
-  { text: "Famed American poet Charles Bukowski's tombstone is engraved with the words \u201cDon't ______.\u201d", answer: "Try" },
-  { text: "A beaver's anal secretions can be used as a ______ substitute in some foods.", answer: "vanilla" }
+  { text: "Famed American poet Charles Bukowski's tombstone is engraved with the words “Don't ______.”", answer: "Try" },
+  { text: "In 2013, Dell issued a recall after customers complained their laptops smelled like ______.", answer: "cat urine" },
+  { text: "ROAD TRIP! When in Port Vila, Vanuatu be sure to check out their post office, which is unusual because it is ______.", answer: "underwater" },
+  { text: "The secret code name for the project to invent the first microwave oven in the 1940s was ______.", answer: "Speedy Weenie" },
+  { text: "The name for a group of porcupines is a ______.", answer: "prickle" },
+  { text: "The original name for Pepsi was ______.", answer: "Brad's Drink" },
+  { text: "According to a Logitech study, 49% of lost remote controls are found in the couch, while 4% are found in the ______.", answer: "fridge" },
+  { text: "The 1995 Diagram Prize for Oddest Book Title of the Year went to the book Reusing Old ______.", answer: "Graves" }
 ];
-
 let state = {
   phase: 'setup', // setup | write | collect | reveal | vote | results | done
   groups: [],
@@ -563,14 +563,13 @@ let state = {
   timer: { remaining: 0, running: false, intervalId: null, total: 0 },
   finalRound: false,
   rulesOpen: false,
+  howToOpen: true,
   lastResults: null,
+  trueGuessers: [],
 };
-
 function uid(){ return Math.random().toString(36).slice(2,9); }
-
 const isDisplay = new URLSearchParams(location.search).get('display') === '1';
 const syncChannel = ('BroadcastChannel' in window) ? new BroadcastChannel('fibbage-sync') : null;
-
 function broadcastState(){
   if(!syncChannel || isDisplay) return;
   const q = (state.order && state.order.length) ? QUESTIONS[state.order[state.roundIndex]] : null;
@@ -592,19 +591,28 @@ function broadcastState(){
   };
   syncChannel.postMessage(snapshot);
 }
-
 function render(){
   const app = document.getElementById('app');
   app.innerHTML = `
     <header class="top">
       <h1>Fibbage<span class="q">.</span></h1>
       <div class="tagline">
-        This is your host screen — answers stay hidden here until you're ready.<br>
+        Host screen — answers stay hidden until you reveal them.<br>
         <button class="open-display-btn small" data-role="openDisplay" style="margin-top:8px;">Open display screen &#10697;</button>
       </div>
     </header>
     <div class="layout">
       <div class="main-col">
+        <div class="rules-toggle" onclick="toggleHowTo()">${state.howToOpen ? 'Hide' : 'Show'} how to play</div>
+        <div class="how-to-play" style="display:${state.howToOpen ? 'block' : 'none'}">
+          <h3>How to play (classroom version)</h3>
+          <ol>
+            <li><b>Write lies:</b> Host reads the question with a blank. Each year group writes a funny but believable fake answer on paper (or device). Leave blank only if you already know the real answer.</li>
+            <li><b>Collect:</b> Host types in what each group wrote. The real answer is added automatically and mixed in.</li>
+            <li><b>Reveal & vote:</b> Host reads all options aloud (A, B, C…). Groups vote for the one they think is the <i>real</i> answer. Groups who already knew it sit out the vote.</li>
+            <li><b>Score:</b> +5 if you wrote the truth (or left blank knowing it). +2 for voting correctly. +2 per person your lie fools. Perfect Fibbage (fools everyone) = +10 bonus. Final round doubles all points.</li>
+          </ol>
+        </div>
         <div class="rules-toggle" onclick="toggleRules()">${state.rulesOpen ? 'Hide' : 'Show'} scoring rules</div>
         <div class="rules-box ${state.rulesOpen ? 'open' : ''}">
           <b>How points work</b>
@@ -625,7 +633,6 @@ function render(){
   renderStage();
   broadcastState();
 }
-
 function sidebar(){
   const sorted = [...state.groups].sort((a,b)=>b.score-a.score);
   const top = sorted.length ? sorted[0].score : 0;
@@ -643,7 +650,6 @@ function sidebar(){
     </div>
   `;
 }
-
 function renderStage(){
   const stage = document.getElementById('stage');
   if(state.phase === 'setup') stage.innerHTML = setupView();
@@ -658,7 +664,6 @@ function renderStage(){
   wireStage();
   broadcastState();
 }
-
 /* ---------- SETUP ---------- */
 function setupView(){
   return `
@@ -674,13 +679,12 @@ function setupView(){
       </div>
       <button class="secondary small" data-role="addGroup" style="margin-top:6px;">+ Add year group</button>
       <div class="footer-actions">
-        <span style="font-family:Verdana, sans-serif; font-size:0.75rem; color:#888;">${QUESTIONS.length} questions loaded, played in random order</span>
+        <span style="font-family:Verdana, sans-serif; font-size:0.75rem; color:#888;">${QUESTIONS.length} school-appropriate questions loaded, played in random order</span>
         <button class="teal" data-role="startGame" ${state.groups.length < 2 ? 'disabled' : ''}>Start game &rarr;</button>
       </div>
     </div>
   `;
 }
-
 /* ---------- WRITE (writing timer) ---------- */
 function writeView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
@@ -701,7 +705,6 @@ function writeView(){
     </div>
   `;
 }
-
 /* ---------- COLLECT ---------- */
 function collectView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
@@ -726,7 +729,6 @@ function collectView(){
     </div>
   `;
 }
-
 /* ---------- REVEAL ---------- */
 function revealView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
@@ -750,7 +752,6 @@ function revealView(){
     </div>
   `;
 }
-
 /* ---------- VOTE ---------- */
 function voteView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
@@ -792,7 +793,6 @@ function voteView(){
     </div>
   `;
 }
-
 /* ---------- RESULTS ---------- */
 function resultsView(){
   const q = QUESTIONS[state.order[state.roundIndex]];
@@ -816,7 +816,6 @@ function resultsView(){
     </div>
   `;
 }
-
 /* ---------- DONE ---------- */
 function doneView(){
   const sorted = [...state.groups].sort((a,b)=>b.score-a.score);
@@ -838,7 +837,6 @@ function doneView(){
     </div>
   `;
 }
-
 /* ---------- helpers ---------- */
 function fillBlank(text){
   return escapeHtml(text).replace('______', '<span class="blank">______</span>');
@@ -854,7 +852,6 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function escapeAttr(s){ return escapeHtml(s); }
-
 function shuffle(arr){
   const a = [...arr];
   for(let i=a.length-1;i>0;i--){
@@ -863,7 +860,6 @@ function shuffle(arr){
   }
   return a;
 }
-
 /* ---------- timer ---------- */
 function startTimer(seconds){
   clearTimer();
@@ -921,11 +917,11 @@ function updateTimerDisplayOnly(){
   }
   const btn = document.querySelector('[data-role="timerToggle"]');
   if(btn && state.timer.remaining===0 && state.timer.running===false){
-    btn.textContent = 'Start';
+    const def = state.phase === 'write' ? 45 : 20;
+    btn.textContent = `Start ${def}s`;
   }
   broadcastState();
 }
-
 /* ---------- actions ---------- */
 function wireStage(){
   const openDisplayBtn = document.querySelector('[data-role="openDisplay"]');
@@ -957,7 +953,6 @@ function wireStage(){
     state.finalRound = false;
     beginRound();
   });
-
   const timerToggle = document.querySelector('[data-role="timerToggle"]');
   if(timerToggle) timerToggle.addEventListener('click', ()=>{
     const def = state.phase === 'write' ? 45 : 20;
@@ -965,14 +960,12 @@ function wireStage(){
   });
   const timerReset = document.querySelector('[data-role="timerReset"]');
   if(timerReset) timerReset.addEventListener('click', resetTimer);
-
   const backToSetup = document.querySelector('[data-role="backToSetup"]');
   if(backToSetup) backToSetup.addEventListener('click', ()=>{
     clearTimer();
-    state = { ...state, phase:'setup', groups: state.phase==='done' ? state.groups.map(g=>({...g, score:0})) : state.groups, submissions:{}, options:[], votes:{}, roundIndex:0, lastResults:null, timer:{remaining:0,running:false,intervalId:null,total:0} };
+    state = { ...state, phase:'setup', groups: state.phase==='done' ? state.groups.map(g=>({...g, score:0})) : state.groups, submissions:{}, options:[], votes:{}, roundIndex:0, lastResults:null, trueGuessers:[], timer:{remaining:0,running:false,intervalId:null,total:0} };
     render();
   });
-
   const toCollect = document.querySelector('[data-role="toCollect"]');
   if(toCollect) toCollect.addEventListener('click', ()=>{
     clearTimer();
@@ -985,7 +978,6 @@ function wireStage(){
     state.phase = 'write';
     renderStage();
   });
-
   document.querySelectorAll('[data-role="submission"]').forEach(inp=>{
     inp.addEventListener('input', e=>{
       state.submissions[e.target.dataset.gid] = e.target.value;
@@ -1002,7 +994,6 @@ function wireStage(){
     state.phase = 'collect';
     renderStage();
   });
-
   const toVote = document.querySelector('[data-role="toVote"]');
   if(toVote) toVote.addEventListener('click', ()=>{
     state.votes = {};
@@ -1016,7 +1007,6 @@ function wireStage(){
     state.phase = 'reveal';
     renderStage();
   });
-
   document.querySelectorAll('[data-role="voteOpt"]').forEach(el=>{
     el.addEventListener('click', e=>{
       const gid = e.currentTarget.dataset.gid;
@@ -1033,10 +1023,16 @@ function wireStage(){
   });
   const backToVote = document.querySelector('[data-role="backToVote"]');
   if(backToVote) backToVote.addEventListener('click', ()=>{
+    // Undo the score changes from last compute so re-scoring is accurate
+    if(state.lastResults && state.lastResults.scoreDeltas){
+      state.lastResults.scoreDeltas.forEach(({gid, amount})=>{
+        const g = state.groups.find(x=>x.id===gid);
+        if(g) g.score -= amount;
+      });
+    }
     state.phase = 'vote';
     renderStage();
   });
-
   const nextRound = document.querySelector('[data-role="nextRound"]');
   if(nextRound) nextRound.addEventListener('click', ()=>{
     state.roundIndex++;
@@ -1049,11 +1045,9 @@ function wireStage(){
     }
   });
 }
-
 function resetTimerSilent(){
   state.timer = { remaining:0, running:false, intervalId:null, total:0 };
 }
-
 function beginRound(){
   clearTimer();
   state.submissions = {};
@@ -1065,7 +1059,6 @@ function beginRound(){
   state.phase = 'write';
   render();
 }
-
 function buildOptions(){
   const q = QUESTIONS[state.order[state.roundIndex]];
   const opts = [];
@@ -1083,23 +1076,22 @@ function buildOptions(){
   state.options = shuffled;
   state.trueGuessers = trueGuessers;
 }
-
 function computeResults(){
   const multiplier = state.finalRound ? 2 : 1;
   const lines = [];
+  const scoreDeltas = []; // for undo support
   const lieOptions = state.options.filter(o=>o.type==='lie');
   const trueOption = state.options.find(o=>o.type==='true');
   const trueGuessers = state.trueGuessers || [];
-
-  // groups who already guessed the real answer on paper get their +5 straight away,
-  // regardless of how they vote
+  // groups who already guessed the real answer on paper get their +5 straight away
   trueGuessers.forEach(gid=>{
     const g = state.groups.find(g=>g.id===gid);
     if(!g) return;
-    addScore(gid, 5*multiplier);
-    lines.push({ desc: `${escapeHtml(g.name)} guessed the real answer on paper`, delta: 5*multiplier });
+    const amt = 5*multiplier;
+    addScore(gid, amt);
+    scoreDeltas.push({gid, amount: amt});
+    lines.push({ desc: `${escapeHtml(g.name)} guessed the real answer on paper`, delta: amt });
   });
-
   // voting points (skip true-guessers here — they're already rewarded above)
   state.groups.forEach(g=>{
     if(trueGuessers.includes(g.id)) return;
@@ -1110,45 +1102,47 @@ function computeResults(){
       return;
     }
     if(votedId === trueOption.id){
-      addScore(g.id, 2*multiplier);
-      lines.push({ desc: `${escapeHtml(g.name)} found the real answer`, delta: 2*multiplier });
+      const amt = 2*multiplier;
+      addScore(g.id, amt);
+      scoreDeltas.push({gid: g.id, amount: amt});
+      lines.push({ desc: `${escapeHtml(g.name)} found the real answer`, delta: amt });
     }
   });
-
   // fooling points per lie author
   lieOptions.forEach(opt=>{
     const foolCount = state.groups.filter(g => g.id !== opt.groupId && state.votes[g.id] === opt.id).length;
     if(foolCount > 0){
       const gained = foolCount * 2 * multiplier;
       addScore(opt.groupId, gained);
+      scoreDeltas.push({gid: opt.groupId, amount: gained});
       const authorName = state.groups.find(g=>g.id===opt.groupId).name;
       lines.push({ desc: `${escapeHtml(authorName)}'s lie fooled ${foolCount} group${foolCount>1?'s':''}`, delta: gained });
-
       const otherGroupCount = state.groups.length - 1;
       if(foolCount === otherGroupCount && otherGroupCount > 0){
-        addScore(opt.groupId, 10*multiplier);
-        lines.push({ desc: `${escapeHtml(authorName)} pulled off a Perfect Fibbage!`, delta: 10*multiplier });
+        const bonus = 10*multiplier;
+        addScore(opt.groupId, bonus);
+        scoreDeltas.push({gid: opt.groupId, amount: bonus});
+        lines.push({ desc: `${escapeHtml(authorName)} pulled off a Perfect Fibbage!`, delta: bonus });
       }
     }
   });
-
   if(lines.length === 0){
     lines.push({ desc: 'No points scored this round', delta: 0 });
   }
-
-  state.lastResults = { lines };
+  state.lastResults = { lines, scoreDeltas };
 }
-
 function addScore(groupId, amount){
   const g = state.groups.find(g=>g.id===groupId);
   if(g) g.score += amount;
 }
-
 function toggleRules(){
   state.rulesOpen = !state.rulesOpen;
   render();
 }
-
+function toggleHowTo(){
+  state.howToOpen = !state.howToOpen;
+  render();
+}
 /* ==================== DISPLAY SCREEN MODE ==================== */
 function renderDisplay(snap){
   document.body.classList.add('display-mode');
@@ -1157,8 +1151,13 @@ function renderDisplay(snap){
     app.innerHTML = `
       <div class="display-wrap">
         <div class="display-main">
-          <div class="display-eyebrow">FIBBAGE</div>
-          <div class="display-msg">Waiting for the host to start the game&hellip;<br>Keep this window open on the projector or TV.</div>
+          <div class="display-eyebrow">FIBBAGE — CLASSROOM EDITION</div>
+          <div class="display-msg">Waiting for the host to start the game&hellip;<br><br>
+          <b style="color:var(--yellow)">How to play</b><br>
+          1. Write a believable lie for the blank<br>
+          2. Vote for the answer you think is real<br>
+          3. Score points by fooling others or finding the truth<br><br>
+          Keep this window open on the projector or TV.</div>
         </div>
       </div>
     `;
@@ -1167,16 +1166,18 @@ function renderDisplay(snap){
   const sortedGroups = [...snap.groups].sort((a,b)=>b.score-a.score);
   const roundLabel = snap.totalRounds ? `Round ${snap.roundIndex+1} of ${snap.totalRounds}` : '';
   const finalTag = snap.finalRound ? '<div class="display-final">FINAL ROUND — DOUBLE POINTS</div>' : '';
-
   let mainHtml = '';
   if(snap.phase === 'setup'){
-    mainHtml = `<div class="display-eyebrow">FIBBAGE</div><div class="display-msg">Get ready&hellip; the host is setting up the game.</div>`;
+    mainHtml = `<div class="display-eyebrow">FIBBAGE — CLASSROOM EDITION</div>
+      <div class="display-msg">Get ready&hellip; the host is setting up the game.<br><br>
+      <b style="color:var(--yellow)">Quick rules</b><br>
+      Write a funny but believable lie → Vote for the real answer → Fool your friends for points!</div>`;
   } else if(snap.phase === 'write'){
     mainHtml = `
       ${finalTag}
       <div class="display-eyebrow">${roundLabel} &mdash; write your answer!</div>
       <div class="display-question">${fillBlankDisplay(snap.question)}</div>
-      ${snap.timer.remaining > 0 || snap.timer.running ? `<div class="display-timer ${snap.timer.remaining<=10 && snap.timer.running ? 'warn':''}">${formatTime(snap.timer.remaining)}</div>` : ''}
+      ${snap.timer.remaining > 0 || snap.timer.running ? `<div class="display-timer ${snap.timer.remaining<=10 && snap.timer.running ? 'warn':''}">${formatTime(snap.timer.remaining)}</div>` : '<div class="display-msg">Write a believable lie on your paper or device.</div>'}
     `;
   } else if(snap.phase === 'collect'){
     mainHtml = `
@@ -1221,7 +1222,6 @@ function renderDisplay(snap){
       <div class="display-question">${sortedGroups.length ? escapeHtml(sortedGroups[0].name) + ' wins!' : ''}</div>
     `;
   }
-
   app.innerHTML = `
     <div class="display-wrap">
       <div class="display-main">${mainHtml}</div>
@@ -1238,7 +1238,6 @@ function fillBlankDisplay(text){
   if(!text) return '';
   return escapeHtml(text).replace('______', '<span class="blank">______</span>');
 }
-
 if(isDisplay){
   document.title = 'Fibbage — Display';
   renderDisplay(null);
